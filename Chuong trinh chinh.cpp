@@ -6,10 +6,11 @@
 
 //===================================== HIEU UNG XOA VA VIET KI TU (1,2) ======================================
 void in_giua(){
-	for(int i=0;i<10;i++){
+	int i;
+	for(i=0;i<10;i++){
 	printf("\n");
 	}
-	for(int i=0;i<10;i++){
+	for(i=0;i<10;i++){
 	printf("    ");
 	}
 }
@@ -34,11 +35,12 @@ void giam(char *s){
             if(c == 'c') break;
             if(c == 'x') exit(0); 
 			 }
-	for(int i=dodai;i>=0;i--){//in giam dan
+	 int i,k;
+	for(i=dodai;i>=0;i--){//in giam dan
 		xoa();
 		datmau(mau);
 		in_giua();
-		for(int k=0;k<=i;k++){
+		for(k=0;k<=i;k++){
 			printf("%c",s[k]);
 		}
 		int t=0;
@@ -71,11 +73,12 @@ void tang(char *s){
 			if(c == 'c') { xoa(); break; }
 			if(c == 'x') exit(0);
 	}
-	for (int i=0; i<dodai ;i++) {//in tang dan 
+	int i,k;
+	for (i=0; i<dodai ;i++) {//in tang dan 
 		xoa();
 		datmau(mau);
 		in_giua();
-		for(int k=0;k<=i;k++){
+		for(k=0;k<=i;k++){
 			printf("%c",s[k]);
 		}
 		int t=0;
@@ -123,10 +126,11 @@ void tang(char *s){
 			CONSOLE_CURSOR_INFO con_tro = {1, FALSE};
 			SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &con_tro);	
     	// Bung ra
-        	for (int i = 0; i <= trung_tam; i++) {
+    	int i,j;
+        	for (i = 0; i <= trung_tam; i++) {
             	system("cls");
             	char hien_thi[100] = {0};
-            	for (int j = trung_tam - i; j <= trung_tam + i && j < do_dai; j++) {
+            	for (j = trung_tam - i; j <= trung_tam + i && j < do_dai; j++) {
                 	if (j >= 0) hien_thi[j - (trung_tam - i)] = chuoi[j];
             	}
             	gotoxy((rong - strlen(hien_thi)) / 2, cao / 2);
@@ -135,10 +139,10 @@ void tang(char *s){
             	Sleep(150);
         	}
         // Thu lai
-        	for (int i = trung_tam; i >= 0; i--) {
+        	for (i = trung_tam; i >= 0; i--) {
             	system("cls");
             	char hien_thi[100] = {0};
-            	for (int j = trung_tam - i; j <= trung_tam + i && j < do_dai; j++) {
+            	for (j = trung_tam - i; j <= trung_tam + i && j < do_dai; j++) {
                 	if (j >= 0) hien_thi[j - (trung_tam - i)] = chuoi[j];
             	}
             	gotoxy((rong - strlen(hien_thi)) / 2, cao / 2);
@@ -163,14 +167,16 @@ int do_dai = strlen(s); int bang_mau[] = {12, 14, 15, 9};
 //Tao hieu ung
     while (1) {    	
     //Lap tung ki tu
-        for (int i = 0; i < do_dai; i++) {
+    int i,j;
+        for (i = 0; i < do_dai; i++) {
             system("cls");            
     // In cac ky tu bay xong
-        	for (int j = 0; j < i; j++) {
+        	for (j = 0; j < i; j++) {
                 ve_ki_tu(giua_x + j, giua_y, s[j], bang_mau[j % 4]);
             }        
     // Hieu ung ki tu bay vao
-            for (int so_lan = 0; so_lan < 10; so_lan++) {
+    int so_lan;
+            for (so_lan = 0; so_lan < 10; so_lan++) {
                 int x_hien_tai = (giua_x + i) * so_lan / 10; // Bay tu ben trai
                 int y_hien_tai = giua_y - (5 - so_lan/2); // Bay tu ben tren           
     		//Xoa vi tri cu
@@ -186,12 +192,162 @@ int do_dai = strlen(s); int bang_mau[] = {12, 14, 15, 9};
     	}
     //Hien chuoi trong 2 giay
         system("cls");
-        for (int i = 0; i < do_dai; i++) {
+        for (i = 0; i < do_dai; i++) {
             ve_ki_tu(giua_x + i, giua_y, s[i], bang_mau[i % 4]);
         }
         Sleep(2000);
     }
 }
+//==========================HIEU UNG DI CHUYEN QUA LAI==================
+
+#define MAX_LINES 100
+#define MAX_WIDTH 100
+//ham ghi khoang trong truoc phan tu trong mang
+void addLeadingSpace(char *s, int *len) {
+    int i;
+	for (i = *len; i >= 0; i--) {
+        s[i + 1] = s[i];
+    }
+    s[0] = ' ';
+    (*len)++;
+}
+//ham xoa khoang trong truoc phan tu mang
+void removeLeadingSpace(char *s, int *len) {
+    int i;
+	if (s[0] == ' ') {
+        for (i = 0; i <= *len; i++) {
+            s[i] = s[i + 1];
+        }
+        (*len)--;
+    }
+}
+//ham hieu ung ky tu di chuyn qua lai
+int effect1(){
+	int i;//bien lap
+    char text[MAX_LINES][MAX_WIDTH * 2] = {0};//mang luu tru chuoi ky tu tu file
+    int len[MAX_LINES] = {0};//bien luu tru do dai chuoi ky tu trong mang text
+    int originalLen[MAX_LINES] = {0};//bien luu tru do dai goc cua chuoi ky tu trong mang text
+    int phase[MAX_LINES] = {0}; // trang thai di chuyen 0 = tien, 1 = lui
+	//mo file text.txt
+    FILE *f = fopen("du lieu.txt", "r");
+    if (f == NULL) {
+//        printf("Khong the mo file text.txt\n");//bao loi neu khong mo duoc file
+		return 0;
+    }
+	//ghi chuoi ky tu tu file text.txt vao mang text
+    while (i < MAX_LINES && fgets(text[i], MAX_WIDTH, f)) {
+        len[i] = strlen(text[i]);//tinh do dai tung dong chuoi ky tu vua ghi tu file
+        originalLen[i] = len[i];//ghi lai do dai goc thuc te cua chuoi ky tu (khong co \n)
+        i++;
+    }
+    fclose(f);
+    int lines = i;
+	//hieu ung di chuyen
+    while (!kbhit()) {
+
+        system("cls");//xoa cac ky tu tren man hinh
+    	printf("bam mhim bat ki de ket thuc\n\n\n");
+        //in va cap nhat vi tri tung dong
+        for (i = 0; i < lines; i++) {
+            printf("%s\n", text[i]);//in cac chuoi ky tu trong file len man hinh
+
+            if (phase[i] == 0) {
+                if (len[i] < MAX_WIDTH) {
+                    addLeadingSpace(text[i], &len[i]);//di chuyen chuoi ky tu qua phai
+                } else {
+                    phase[i] = 1;//doi huong khi do dai cua chuoi ky tu trong mang dat MAX_LENTH
+                }
+            } else {
+                if (len[i] > originalLen[i]) {
+                    removeLeadingSpace(text[i], &len[i]);//di chuyen chuoi ky tu qua trai
+                } else {
+                    phase[i] = 0;//doi huong khi chuoi ky tu tro ve do dai goc originallen
+                }
+            }
+        }
+        Sleep(100);//van toc cho cac chuoi ky tu chay
+    }
+}
+//ham hieu ung chuoi ky tu nhap nhay nhap nhay
+int effect2(){
+	int i = 0;
+    char text[MAX_LINES][MAX_WIDTH];
+
+    //mo file text.txt
+    FILE* f = fopen("du lieu.txt", "r");
+    if (f == NULL) {
+        return 0;
+    }
+
+    while (i < MAX_LINES && fgets(text[i], MAX_WIDTH, f) != NULL) {
+        text[i][strcspn(text[i], "\n")] = '\0'; //xoa \n trong chuoi ky tu
+        i++;
+    }
+    fclose(f);
+
+    int lines = i;//bien luu so luong dong
+	int k;
+	int t;
+    while (!kbhit()) {
+        //hien thi tung dong tu tren xuong duoi
+        for (k = 0; k < lines; k++) {
+            system("cls");
+            //in lan luot cac dong
+            for (i = 0; i <= k; i++) {
+                printf("%s\n",text[i]);
+            }
+
+            Sleep(300);
+        }
+
+        //cho cac dong nhap nhay 3 lan
+        for (t = 0; t < 3; t++) {
+            system("cls");
+            Sleep(200);;
+            for (i = 0; i < lines; i++) {
+                printf("%s\n",text[i]);
+            }
+            Sleep(200);
+        }
+
+        Sleep(500);
+    }
+	
+}
+
+int modesel(){
+	while(1){
+	system("cls");
+	int mode;
+	printf("1.hieu ung di chuyen qua lai\n");
+	printf("2.hieu ung nhap nhay\n");
+	printf("nhap 0 de ket thuc\n");
+	printf("hay chon hieu ung:");
+	while (scanf("%d", &mode) != 1) {
+        printf("Khong hop le, vui long nhap lai:");
+        while (getchar() != '\n');
+    }
+    if(mode == 1){
+		effect1();
+		if(effect1()==0){
+			printf("Khong the mo file\n");
+			return 0;
+		}
+	}
+    else if(mode == 2) {
+		effect2();
+		if(effect2()==0){
+			printf("Khong the mo file\n");
+			return 0;
+		}
+	}
+    else if(mode == 0) return 0;
+    	
+	}
+}
+
+
+
 //==========================QUAY LAI MENU VA THOAT MENU (HAM CHUNG)==================
 int quay_thoat_menu(){
 	if(kbhit()){
@@ -249,7 +405,10 @@ int main(){
             	hieu_ung_bung(s);
             	hieu_ung_bay(s);
             	if(quay_thoat_menu() ==1) break;
-				break;	
+            	case 3:
+			modesel();
+		if(quay_thoat_menu() ==1) break;
+		break;	
 		}
 	}
 	return 0;
