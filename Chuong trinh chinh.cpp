@@ -192,6 +192,127 @@ int do_dai = strlen(s); int bang_mau[] = {12, 14, 15, 9};
         Sleep(2000);
     }
 }
+//==========================HIEU UNG DI CHUYEN QUA LAI & NHAP NHAY===============================
+
+#define MAX_LINES 100
+#define MAX_WIDTH 100
+//ham ghi khoang trong truoc phan tu trong mang
+void addLeadingSpace(char *s, int *len) {
+    int i;
+	for (i = *len; i >= 0; i--) {
+        s[i + 1] = s[i];
+    }
+    s[0] = ' ';
+    (*len)++;
+}
+//ham xoa khoang trong truoc phan tu mang
+void removeLeadingSpace(char *s, int *len) {
+    int i;
+	if (s[0] == ' ') {
+        for (i = 0; i <= *len; i++) {
+            s[i] = s[i + 1];
+        }
+        (*len)--;
+    }
+}
+
+//ham hieu ung ky tu di chuyen qua lai
+int di_chuyen(){
+	int i;//bien lap
+    char text[MAX_LINES][MAX_WIDTH * 2] = {0};//mang luu tru chuoi ky tu tu file
+    int len[MAX_LINES] = {0};//bien luu tru do dai chuoi ky tu trong mang text
+    int originalLen[MAX_LINES] = {0};//bien luu tru do dai goc cua chuoi ky tu trong mang text
+    int phase[MAX_LINES] = {0}; // trang thai di chuyen 0 = tien, 1 = lui
+	//mo file text.txt
+    FILE *f = fopen("text.txt", "r");
+    if (f == NULL) {
+//        printf("Khong the mo file text.txt\n");//bao loi neu khong mo duoc file
+		return 1;
+    }
+	//ghi chuoi ky tu tu file text.txt vao mang text
+    while (i < MAX_LINES && fgets(text[i], MAX_WIDTH, f)) {
+        len[i] = strlen(text[i]);//tinh do dai tung dong chuoi ky tu vua ghi tu file
+        originalLen[i] = len[i];//ghi lai do dai goc thuc te cua chuoi ky tu (khong co \n)
+        i++;
+    }
+    fclose(f);
+    int lines = i;
+	//hieu ung di chuyen
+    while (!kbhit()) {
+
+        system("cls");//xoa cac ky tu tren man hinh
+    	printf("bam mhim bat ki de ket thuc\n\n\n");
+        //in va cap nhat vi tri tung dong
+        for (i = 0; i < lines; i++) {
+            printf("%s\n", text[i]);//in cac chuoi ky tu trong file len man hinh
+
+            if (phase[i] == 0) {
+                if (len[i] < MAX_WIDTH) {
+                    addLeadingSpace(text[i], &len[i]);//di chuyen chuoi ky tu qua phai
+                } else {
+                    phase[i] = 1;//doi huong khi do dai cua chuoi ky tu trong mang dat MAX_LENTH
+                }
+            } else {
+                if (len[i] > originalLen[i]) {
+                    removeLeadingSpace(text[i], &len[i]);//di chuyen chuoi ky tu qua trai
+                } else {
+                    phase[i] = 0;//doi huong khi chuoi ky tu tro ve do dai goc originallen
+                }
+            }
+        }
+        Sleep(100);//van toc cho cac chuoi ky tu chay
+    }
+    getch();
+}
+
+//ham hieu ung chuoi ky tu nhap nhay nhap nhay
+int nhap_nhay(){
+	int i = 0;
+    char text[MAX_LINES][MAX_WIDTH];
+
+    //mo file text.txt
+    FILE* f = fopen("text.txt", "r");
+    if (f == NULL) {
+        return 1;
+    }
+
+    while (i < MAX_LINES && fgets(text[i], MAX_WIDTH, f) != NULL) {
+        text[i][strcspn(text[i], "\n")] = '\0'; //xoa \n trong chuoi ky tu
+        i++;
+    }
+    fclose(f);
+
+    int lines = i;//bien luu so luong dong
+	int k;
+	int t;
+    while (!kbhit()) {
+        //hien thi tung dong tu tren xuong duoi
+        for (k = 0; k < lines; k++) {
+            system("cls");
+            //in lan luot cac dong
+            for (i = 0; i <= k; i++) {
+                printf("%s\n",text[i]);
+            }
+
+            Sleep(300);
+        }
+
+        //cho cac dong nhap nhay 3 lan
+        for (t = 0; t < 3; t++) {
+            system("cls");
+            Sleep(200);;
+            for (i = 0; i < lines; i++) {
+                printf("%s\n",text[i]);
+            }
+            Sleep(200);
+        }
+
+        Sleep(500);
+    }
+	getch();
+	
+}
+
 //==========================QUAY LAI MENU VA THOAT MENU (HAM CHUNG)==================
 int quay_thoat_menu(){
 	if(kbhit()){
